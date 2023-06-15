@@ -36,44 +36,56 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		</ul>
 	</div>
 </nav>
-
-<div class="container mt-5">
-	<div class="row">
-		<div class="col-md-4">
-			<div class="card">
-				<div class="card-header">
-					Create Note
-				</div>
-				<div class="card-body">
-					<form>
-						<div class="form-group">
-							<label for="title">Title</label>
-							<input type="text" class="form-control" id="title" name="title">
-						</div>
-						<div class="form-group">
-							<label for="content">Content</label>
-							<textarea class="form-control" id="content" name="content"></textarea>
-						</div>
-						<button type="button" class="btn btn-primary" onclick="createNote()">Create</button>
-					</form>
-				</div>
+<?php if (!isset($_SESSION['user_id'])) { ?>
+	<!-- code for non-logged in users -->
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12 text-center mt-5">
+				<h1>Note Taking App</h1>
+				<p class="lead mt-3">Take notes easily and quickly with our simple and intuitive app.</p>
+				<a href="#" data-toggle="modal" data-target="#loginModal" class="btn btn-primary mt-4">Get Started</a>
 			</div>
-		</div>
-		<div class="col-md-8">
-			<div class="card">
-				<div class="card-header">
-					Notes
-				</div>
-				<div class="card-body">
-					<ul class="list-group" id="notesList">
-
-					</ul>
-				</div>
-			</div>
-			<div id="pagination"></div>
 		</div>
 	</div>
-</div>
+<?php } else { ?>
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col-md-4">
+				<div class="card">
+					<div class="card-header">
+						Create Note
+					</div>
+					<div class="card-body">
+						<form>
+							<div class="form-group">
+								<label for="title">Title</label>
+								<input type="text" class="form-control" id="title" name="title">
+							</div>
+							<div class="form-group">
+								<label for="content">Content</label>
+								<textarea class="form-control" id="content" name="content"></textarea>
+							</div>
+							<button type="button" class="btn btn-primary" onclick="createNote()">Create</button>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-8">
+				<div class="card">
+					<div class="card-header">
+						Notes
+					</div>
+					<div class="card-body">
+						<ul class="list-group" id="notesList">
+
+						</ul>
+					</div>
+				</div>
+				<div id="pagination"></div>
+			</div>
+		</div>
+	</div>
+<?php } ?>
 
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
 	 aria-hidden="true">
@@ -123,6 +135,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					</div>
 					<button type="button" class="btn btn-primary" onclick="register()">Register</button>
 				</form>
+				<a href="#" onclick="OpenLogin(); return false">Already have an account?</a>
 			</div>
 		</div>
 	</div>
@@ -153,7 +166,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 	</div>
 </div>
 
-
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -162,6 +174,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <!-- Bootstrap JS -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 <script>
+	function OpenLogin(){
+		$('#registerModal').modal('hide')
+		setTimeout(function () {
+			$('#loginModal').modal('show');
+		}, 50);
+	}
 	// <p>No notes found.</p>
 	// <ul class="list-group">
 	// 	<li class="list-group-item">
@@ -289,7 +307,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 	}
 
 	function getNotes(pageIndex, pageSize) {
-		if(typeof pageSize == 'undefined'){
+		if (typeof pageSize == 'undefined') {
 			pageSize = 5;
 		}
 		$('#notesList').html('');
@@ -338,7 +356,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 				$('#notesList').append(table);
 
-				$('.edit-btn').on('click', function() {
+				$('.edit-btn').on('click', function () {
 					const noteId = $(this).closest('tr').data('note-id');
 					editNote(noteId);
 				});
@@ -355,7 +373,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 				let totalPages = Math.ceil(response.total_notes / pageSize);
 
 // Create pagination links
-				let pagination = $('<ul>').addClass('pagination');
+				let pagination = $('<ul>').addClass('pagination justify-content-center mt-3');
 				for (let i = 0; i < totalPages; i++) {
 					let link = $('<a>').attr('href', '#').addClass('page-link').html(i + 1);
 					let listItem = $('<li>').addClass('page-item');
@@ -408,7 +426,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		});
 
 		// Add an event listener to the "Submit Edit" button
-		$('#submitEdit').on('click', function() {
+		$('#submitEdit').on('click', function () {
 			// Send an AJAX request to update the note
 			$.ajax({
 				url: "<?php echo site_url('Main/update_note'); ?>",
