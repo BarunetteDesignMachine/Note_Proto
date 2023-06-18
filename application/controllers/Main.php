@@ -128,12 +128,18 @@ class Main extends CI_Controller
 		$user_id = $this->session->userdata('user_id');
 		$page_index = $this->input->post('page_index');
 		$page_size = $this->input->post('page_size');
+		$total_notes = $this->MainModel->count_notes($user_id);
 		// Get the note from the database
-		$notes = $this->MainModel->get_notes($user_id,$page_size,$page_index);
+		$notes = $this->MainModel->get_notes($user_id,$page_size,$page_index,$total_notes);
 
 		// Return the note as a JSON object
 		echo json_encode($notes);
 
+	}
+	public function get_note_details() {
+		$note_id = $this->input->post('note_id');
+		$note = $this->MainModel->get_note_details($note_id);
+		echo json_encode($note);
 	}
 	public function get_note($note_id) {
 

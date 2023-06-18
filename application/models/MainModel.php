@@ -24,7 +24,19 @@ class MainModel extends CI_Model {
 			'notes'=>$result
 		));
 	}
-
+	public function count_notes($user_id) {
+		$this->db->from('notes');
+		$this->db->where('user_id', $user_id);
+		return $this->db->count_all_results();
+	}
+	public function get_note_details($note_id) {
+		$this->db->select('*');
+		$this->db->from('notes');
+		$this->db->where('id', $note_id);
+		$query = $this->db->get();
+		$result = $query->row_array();
+		return $result;
+	}
 	public function create_note($user_id, $title, $content) {
 		$data = array(
 			'user_id' => $user_id,
